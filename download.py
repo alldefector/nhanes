@@ -1,7 +1,7 @@
 '''
 Downloads all the XPT files in the specified URL, and stores them in the
 destination folder. Two arguments are mandatory: first: the desired NHANES cycle,
-and second, the destination folder. 
+and second, the destination folder.
 
 @copyright: Fathom Information Design 2014
 '''
@@ -53,12 +53,15 @@ for comp in components:
     content = urllib.request.urlopen(url).read()
     soup = BeautifulSoup(content, features="lxml")
     table = soup.find( "table")
-    
+
     for a in table.find_all("a", href=True):
         url = a["href"]
         name = os.path.split(url)[1]
-        ext  = os.path.splitext(name)[1].lower()
+        if name.split('_')[0] in ['PAXMIN', 'PAXHR']:
+            continue
+        ext = os.path.splitext(name)[1].lower()
         if ext == ".xpt":
+            print('  fetching', name)
             dest_fn = os.path.join(dest_dir, name)
             full_url = base_url + url
             print("  ", full_url, "...", dest_fn)
